@@ -59,7 +59,7 @@ Hoganizer.prototype.compileTemplates = function() {
   result += '//\t\t }} Compiled templates are at the bottom {{\n\n';
 
   // also provide hogan's render engine
-  result += fs.readFileSync('./template.js', 'utf-8');
+  result += fs.readFileSync(__dirname + '/template.js', 'utf-8');
 
   result += '(function() {var templates = {};';
   _.each(this.templates, function(template) {
