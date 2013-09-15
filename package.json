@@ -1,6 +1,6 @@
 {
   "name": "hoganizer",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A hogan.js precompiler for client side vanillaJS templates",
   "main": "hoganizer.js",
   "keywords": [
