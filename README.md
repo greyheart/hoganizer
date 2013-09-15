@@ -5,7 +5,7 @@ hoganizer
 
 hogan.js precompiler for client side vanillaJS templates
 
-*Inspired by [templatizer](https://github.com/HenrikJoreteg/templatizer) and built on top of [hogan.js](http://http://twitter.github.io/hogan.js/)*
+*Inspired by [templatizer](https://github.com/HenrikJoreteg/templatizer) and built on top of [hogan.js](http://twitter.github.io/hogan.js/)*
 
 ## Hoganizer?
 
