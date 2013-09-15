@@ -1,0 +1,20 @@
+{
+  "name": "hoganizer",
+  "version": "0.0.1",
+  "description": "A hogan.js precompiler for client side vanillaJS templates",
+  "keywords": [
+    "hogan.js",
+    "mustache",
+    "precompiler"
+  ],
+  "author": "Mike van Rossum <mike@mvr.me>",
+  "dependencies": {
+    "underscore": ">=1.5.2",
+    "walkdir": ">=0.0.7"
+  },
+  "engines": { "node": "0.10.x" },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/askmike/hoganizer.git"
+  }
+}
