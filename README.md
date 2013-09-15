@@ -56,7 +56,7 @@ Create a file called `home.mustache` inside `templates`:
     var NameOfTemplate = 'home';
     var parameters = {name: 'Hulk', hobby: 'wrestling' };
 
-    var renderedTemplate = templates[NameOfTemplate](parameters);
+    var renderedTemplate = templates[NameOfTemplate].render(parameters);
     // -> 'I am <em>Hulk</em>, I like Wrestling!';
     $('body').html(renderedTemplate);
 
