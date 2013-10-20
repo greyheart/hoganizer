@@ -11,8 +11,8 @@ hogan.js precompiler for client side vanillaJS templates
 
 Hoganizer precompiles mustache templates in to vanillaJS javascript functions so they render blazingly fast on the client side. This renders your app way faster because:
 
-- Hoganizer parses the templates way before they are shipped to the client, remember that parsing is always the most time consuming operation.
-- Hoganizer outputs vanillaJS functions that only need the small template renderer from Hogan.js, this means you are not sending the whole hogan.js parsing engine over the wire, but only bare javascript functions and a small template wrapper.
+- Hoganizer parses the templates way before they are shipped to the client, remember that parsing is always the most time consuming operation in template land.
+- Hoganizer outputs vanillaJS functions that only need the small template renderer from Hogan.js, this means you are not sending the whole hogan.js template engine over the wire, but only bare javascript functions and a small template wrapper.
 
 ## When should I use Hoganizer?
 
@@ -64,7 +64,9 @@ Create a file called `home.mustache` inside `templates`:
 
 Run `hoganizer.write();` to create compiled functions and save them into `templates.js`, a static file which you can serve through a normal webserver.
 
-*Warning: don't use the precompile & write methods on a production webserver. They use sync fs methods and thus block!*
+To squeeze out the best performance, I recommend JS minifying the resulting templates.js (and for example concatenating it with the rest of your frontend JS) as well as HTML minifying the mustache files *before* they are written to vanillaJS by the write method (because after this process JS minifiers do not touch compiled JS strings).
+
+**Warning: don't use the precompile & write methods on a in production running nodejs webserver. They use sync fs methods and thus block your whole node server!**
 
 ### Dev
 
