@@ -9,13 +9,18 @@ var Hoganizer = function(options) {
     extension: '.mustache',
     writeLocation: './templates.js'
   }
-  this.config = _.extend(defaults, options);
-  this.root = process.cwd() + "/";
+  this.config = _.extend(defaults, options); 
+
+  // make paths static 
+  if(this.config.templateDir.indexOf('/') !== 0)    
+    this.config.templateDir = process.cwd() + "/" + this.config.templateDir;  
+  if(this.config.writeLocation.indexOf('/') !== 0)
+    this.config.writeLocation = process.cwd() + "/" + this.config.writeLocation;  
 }
 
 // Search for all templates in the templates folder
 Hoganizer.prototype.extractTemplates = function() {
-  var content = walkdir(this.root + this.config.templateDir);
+  var content = walkdir(this.config.templateDir);
   this.templateFiles = _.filter(content, this.isTemplate, this);
 }
 
@@ -99,7 +104,7 @@ Hoganizer.prototype.getCached = function() {
 // Write out compiled version to writeLocation
 Hoganizer.prototype.write = function() {
   this.precompile();
-  fs.writeFileSync(this.root + this.config.writeLocation, this.result);
+  fs.writeFileSync(this.config.writeLocation, this.result);
 }
 
 module.exports = Hoganizer;
