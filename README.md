@@ -1,6 +1,10 @@
 hoganizer
 =========
 
+This fork changes the compilation of templates to follow [templatizer](https://github.com/HenrikJoreteg/templatizer) more closely:
+- uses module.exports (CommonJS form to use with browserify)
+- creates nested attributes from the template directory structure (e.g. templates/info/disclaimer -> templates.info.disclaimer)
+
 ![The Hogan](http://askmike.org/stuff/hogan.jpg)
 
 hogan.js precompiler for client side vanillaJS templates

@@ -39,12 +39,20 @@ Hoganizer.prototype.loadTemplates = function() {
     var name = _.last(template.split('/'));
     name = name.replace(this.config.extension, '');
 
+    // extract the path from the dir structure
+    var path = template.replace(this.config.templateDir, '');
+    path = path.replace(this.config.extension, '');
+    path = path.split('/');
+    path.shift();
+    path = path.join('.');
+
     var content = fs.readFileSync(template, 'utf-8');
     content = this.removeByteOrderMark(content);
 
     return {
       content: content,
-      name: name
+      name: name,
+      path: path
     }
   }, this)  
 }
@@ -63,20 +71,27 @@ Hoganizer.prototype.compileTemplates = function() {
   var result = '//\t\t }} Precompiled by Hoganizer {{\n';
   result += '//\t\t }} Compiled templates are at the bottom {{\n\n';
 
+  result += '(function() {\n';
+
   // also provide hogan's render engine
   result += fs.readFileSync(__dirname + '/template.js', 'utf-8');
 
-  result += '(function() {var templates = {};';
+  // initialize nested attributes from path info
+  result += 'var templates = {};\n';
+  result += _.map(_.uniq(_.reduce(_.pluck(this.templates, 'path'), 
+    function(memo, path) { dirs = path.split('.'); dirs.pop(); for(i=1;i<=dirs.length;i++){ memo.push(dirs.slice(0, i).join('.')); } return memo; },
+    [])), function(path) { return 'templates.' + path + ' = {};\n'}).join('');
+
   _.each(this.templates, function(template) {
     result += [
       '\ntemplates.',
-      template.name,
-      ' = new Hogan.Template(',
+      template.path,
+      ' = new exports.Template(',
       hogan.compile(template.content, {asString: 1}),
       ');'
     ].join('');
   }, this);
-  result += '\nwindow.templates = templates})();'
+  result += '\nmodule.exports = templates;\n})();'
 
   return this.result = result;
 }
