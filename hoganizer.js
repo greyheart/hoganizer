@@ -78,6 +78,7 @@ Hoganizer.prototype.compileTemplates = function() {
 
   // initialize nested attributes from path info
   result += 'var templates = {};\n';
+  result += 'templates.raw = {};\n';
   result += _.map(_.uniq(_.reduce(_.pluck(this.templates, 'path'),
     function(memo, path) { dirs = path.split('.'); dirs.pop(); for(i=1;i<=dirs.length;i++){ memo.push(dirs.slice(0, i).join('.')); } return memo; },
     [])), function(path) { return 'templates.' + path + ' = {};\ntemplates.raw.' + path + ' = {};\n'}).join('');
