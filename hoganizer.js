@@ -97,7 +97,7 @@ Hoganizer.prototype.compileTemplates = function() {
       template.path,
       ' = function(data) { templates.raw.',
       template.path,
-      '.render(data); };');'
+      '.render(data); };'
     ].join('');
   }, this);
   result += '\nmodule.exports = templates;\n})();'
