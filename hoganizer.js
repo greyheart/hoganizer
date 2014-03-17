@@ -8,14 +8,14 @@ var Hoganizer = function(options) {
     templateDir: './templates',
     extension: '.mustache',
     writeLocation: './templates.js'
-  }
-  this.config = _.extend(defaults, options); 
+  };
+  this.config = _.extend(defaults, options);
 
-  // make paths static 
-  if(this.config.templateDir.indexOf('/') !== 0)    
-    this.config.templateDir = process.cwd() + "/" + this.config.templateDir;  
+  // make paths static
+  if(this.config.templateDir.indexOf('/') !== 0)
+    this.config.templateDir = process.cwd() + "/" + this.config.templateDir;
   if(this.config.writeLocation.indexOf('/') !== 0)
-    this.config.writeLocation = process.cwd() + "/" + this.config.writeLocation;  
+    this.config.writeLocation = process.cwd() + "/" + this.config.writeLocation;
 }
 
 // Search for all templates in the templates folder
@@ -54,7 +54,7 @@ Hoganizer.prototype.loadTemplates = function() {
       name: name,
       path: path
     }
-  }, this)  
+  }, this)
 }
 
 // Remove utf-8 byte order mark, http://en.wikipedia.org/wiki/Byte_order_mark
@@ -78,17 +78,26 @@ Hoganizer.prototype.compileTemplates = function() {
 
   // initialize nested attributes from path info
   result += 'var templates = {};\n';
-  result += _.map(_.uniq(_.reduce(_.pluck(this.templates, 'path'), 
+  result += _.map(_.uniq(_.reduce(_.pluck(this.templates, 'path'),
     function(memo, path) { dirs = path.split('.'); dirs.pop(); for(i=1;i<=dirs.length;i++){ memo.push(dirs.slice(0, i).join('.')); } return memo; },
-    [])), function(path) { return 'templates.' + path + ' = {};\n'}).join('');
+    [])), function(path) { return 'templates.' + path + ' = {};\ntemplates.raw.' + path + ' = {};\n'}).join('');
 
   _.each(this.templates, function(template) {
     result += [
-      '\ntemplates.',
+      '\ntemplates.raw.',
       template.path,
       ' = new exports.Template(',
       hogan.compile(template.content, {asString: 1}),
       ');'
+    ].join('');
+  }, this);
+  _.each(this.templates, function(template) {
+    result += [
+      '\ntemplates.',
+      template.path,
+      ' = function(data) { templates.raw.',
+      template.path,
+      '.render(data); };');'
     ].join('');
   }, this);
   result += '\nmodule.exports = templates;\n})();'
@@ -96,9 +105,9 @@ Hoganizer.prototype.compileTemplates = function() {
   return this.result = result;
 }
 
-// 
+//
 //  ---- Public API ----
-// 
+//
 
 // Retrieve all template files, precompile them
 // and spit out a vanilla js version of all templates
