@@ -2,6 +2,7 @@ var hogan = require('hogan.js');
 var _ = require('underscore');
 var fs = require('fs');
 var walkdir = require('walkdir').sync;
+var pathModule = require('path');
 
 var Hoganizer = function(options) {
   var defaults = {
@@ -13,9 +14,9 @@ var Hoganizer = function(options) {
 
   // make paths static
   if(this.config.templateDir.indexOf('/') !== 0)
-    this.config.templateDir = process.cwd() + "/" + this.config.templateDir;
+    this.config.templateDir = this.config.templateDir;
   if(this.config.writeLocation.indexOf('/') !== 0)
-    this.config.writeLocation = process.cwd() + "/" + this.config.writeLocation;
+    this.config.writeLocation = this.config.writeLocation;
 }
 
 // Search for all templates in the templates folder
@@ -36,13 +37,13 @@ Hoganizer.prototype.isTemplate = function(file) {
 Hoganizer.prototype.loadTemplates = function() {
   this.templates = _.map(this.templateFiles, function(template) {
     // remove dir structure & remove extension
-    var name = _.last(template.split('/'));
+    var name = _.last(template.split(pathModule.sep));
     name = name.replace(this.config.extension, '');
 
     // extract the path from the dir structure
     var path = template.replace(this.config.templateDir, '');
     path = path.replace(this.config.extension, '');
-    path = path.split('/');
+    path = path.split(pathModule.sep);
     path.shift();
     path = path.join('.');
 
@@ -74,7 +75,7 @@ Hoganizer.prototype.compileTemplates = function() {
   result += '(function() {\n';
 
   // also provide hogan's render engine
-  result += fs.readFileSync(__dirname + '/template.js', 'utf-8');
+  result += fs.readFileSync(pathModule.join(__dirname, 'template.js'), 'utf-8');
 
   // initialize nested attributes from path info
   result += 'var templates = {};\n';
