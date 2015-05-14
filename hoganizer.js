@@ -8,7 +8,8 @@ var Hoganizer = function(options) {
   var defaults = {
     templateDir: './templates',
     extension: '.mustache',
-    writeLocation: './templates.js'
+    writeLocation: './templates.js',
+    namespace: null,
   };
   this.config = _.extend(defaults, options);
 
@@ -72,28 +73,29 @@ Hoganizer.prototype.compileTemplates = function() {
   var result = '//\t\t }} Precompiled by Hoganizer {{\n';
   result += '//\t\t }} Compiled templates are at the bottom {{\n\n';
 
-  result += '(function() {\n';
+  result += '(function(g) {\n';
 
   // also provide hogan's render engine
   result += fs.readFileSync(pathModule.join(__dirname, 'template.js'), 'utf-8');
 
   // initialize nested attributes from path info
   result += 'var templates = {};\n';
-  result += 'templates.raw = {};\n';
-  result += _.map(_.uniq(_.reduce(_.pluck(this.templates, 'path'),
+  //result += 'templates.raw = {};\n';
+  /*result += _.map(_.uniq(_.reduce(_.pluck(this.templates, 'path'),
     function(memo, path) { dirs = path.split('.'); dirs.pop(); for(i=1;i<=dirs.length;i++){ memo.push(dirs.slice(0, i).join('.')); } return memo; },
     [])), function(path) { return 'templates.' + path + ' = {};\ntemplates.raw.' + path + ' = {};\n'}).join('');
+  */
 
   _.each(this.templates, function(template) {
     result += [
-      '\ntemplates.raw.',
-      template.path,
-      ' = new exports.Template(',
+      '\ntemplates.',
+      template.name,
+      ' = new Hogan.Template(',
       hogan.compile(template.content, {asString: 1}),
       ');'
     ].join('');
   }, this);
-  _.each(this.templates, function(template) {
+  /*_.each(this.templates, function(template) {
     result += [
       '\ntemplates.',
       template.path,
@@ -101,8 +103,14 @@ Hoganizer.prototype.compileTemplates = function() {
       template.path,
       '.render(data); };'
     ].join('');
-  }, this);
-  result += '\nmodule.exports = templates;\n})();'
+  }, this);*/
+  if(this.config.namespace) {
+    result += '\nvar ns = g["' + this.config.namespace + '"] || (g["' + this.config.namespace + '"] = {});';
+    result += '\nns.templates = templates;\n})';
+  } else {
+    result += '\ng["templates"] = templates;\n})';
+  }
+  result += '(typeof exports !== \'undefined\' ? exports : window);';
 
   return this.result = result;
 }
